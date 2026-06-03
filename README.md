@@ -30,31 +30,6 @@ Este es el código fuente de mi portafolio personal, una página web estática d
 - **Formspree:** Para gestionar el envío del formulario de contacto sin necesidad de un backend propio.
 - **Google Fonts:** Para cargar las tipografías `Manrope` y `Space Mono`.
 
-## ⚙️ Instalación y Configuración
-
-Este es un sitio web estático, por lo que no requiere un proceso de construcción complejo.
-
-1.  **Clonar el repositorio (o descargar los archivos):**
-    ```bash
-    git clone https://github.com/shift-jesus/portfolio.git
-    ```
-
-2.  **Abrir el archivo `index.html`:**
-    Simplemente abre el archivo `index.html` en tu navegador web preferido.
-
-3.  **Configurar el formulario de contacto (Opcional):**
-    Si deseas utilizar tu propio endpoint de Formspree, sigue estos pasos:
-    - Ve a Formspree.io y crea un nuevo formulario.
-    - Copia la URL de tu endpoint.
-    - En `index.html`, busca la etiqueta `<form>` dentro de la sección de contacto y reemplaza el valor del atributo `action` con tu URL.
-
-    ```html
-    <!-- Línea a modificar -->
-    <form id="contactForm" class="space-y-5" action="TU_NUEVO_ENDPOINT_DE_FORMSPREE" method="POST">
-      ...
-    </form>
-    ```
-
 ## ✉️ Contacto
 
 Puedes contactarme a través del formulario en el sitio web o directamente a mi correo: `Jesusdyunes475@gmail.com`.
