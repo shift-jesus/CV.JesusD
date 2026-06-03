@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jesus David Campo Yunes | Full Stack Developer Jr.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#0a0a0a', 800: '#111111', 700: '#1a1a1a', 600: '#1e1e1e', 500: '#2a2a2a', 400: '#333333', 300: '#444444' },
+            neon: '#00ff00',
+            cyan: '#00d7ff',
+            txt: '#e6e6e6',
+            txtmuted: '#999999',
+          },
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+            mono: ['Space Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::selection { background: #00ff00; color: #0a0a0a; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00ff00; }
+    html { scroll-behavior: smooth; }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .cursor-blink { animation: blink 1s step-end infinite; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.6s ease-out forwards; }
+    .fade-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
+    .fade-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+    .scanline {
+      background: linear-gradient(transparent, rgba(0,255,0,0.03), transparent);
+      height: 100px;
+      animation: scanline 8s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 5px rgba(0,255,0,0.3), 0 0 10px rgba(0,255,0,0.1); }
+      50% { box-shadow: 0 0 15px rgba(0,255,0,0.5), 0 0 30px rgba(0,255,0,0.2); }
+    }
+    .glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+
+    .grid-overlay {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .skill-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+      border-color: rgba(0,255,0,0.3);
+      background: #1e1e1e;
+      transform: translateY(-4px);
+      box-shadow: 0 0 15px rgba(0,255,0,0.1);
+    }
+
+    .project-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .project-card:hover {
+      border-color: rgba(0,255,0,0.4);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0,255,0,0.05);
+    }
+
+    .project-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .project-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .project-modal-content {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .project-modal-content h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #e6e6e6;
+      margin-bottom: 0.5rem;
+    }
+    .project-modal-content p {
+      color: #ccc;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+    .project-modal-content .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      cursor: pointer;
+      color: #999;
+      transition: all 0.2s;
+    }
+    .project-modal-content .close-btn:hover {
+      color: #00ff00;
+      border-color: #00ff00;
+    }
+  </style>
+</head>
+<body class="bg-dark-900 text-txt font-sans">
+
+  <!-- Noise Texture Overlay -->
+  <div class="fixed inset-0 pointer-events-none z-[100] opacity-[0.02]" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E');"></div>
+
+  <!-- Scanline Effect -->
+  <div class="fixed inset-0 pointer-events-none z-[99] overflow-hidden">
+    <div class="scanline absolute inset-x-0"></div>
+  </div>
+
+  <!-- Grid Overlay -->
+  <div class="fixed inset-0 pointer-events-none z-0 grid-overlay opacity-50"></div>
+
+  <!-- ===== NAVIGATION ===== -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background: rgba(10,10,10,0.85); backdrop-filter: blur(12px);">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#hero" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-lg bg-neon flex items-center justify-center glow-pulse">
+          <i data-lucide="code-2" class="w-4 h-4 text-dark-900" style="stroke-width:2.5"></i>
+        </div>
+        <span class="text-xl font-bold tracking-tight text-txt">JDCY<span class="text-neon">.dev</span></span>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#skills" class="text-sm font-medium text-txtmuted hover:text-neon transition-colors duration-300">Skills</a>
+        <a href="#projects" class="text-sm font-medium text-txtmuted hover:text-neon transition-colors duration-300">Proyectos</a>
+        <a href="#contact" class="text-sm font-medium text-txtmuted hover:text-neon transition-colors duration-300">Contacto</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/shift-jesus" target="_blank" rel="noopener" class="p-2 rounded-lg hover:bg-dark-500 transition-colors duration-300" title="GitHub Principal">
+          <i data-lucide="github" class="w-5 h-5 text-txtmuted hover:text-neon transition-colors"></i>
+        </a>
+        <a href="https://github.com/shift-jesus" target="_blank" rel="noopener" class="p-2 rounded-lg hover:bg-dark-500 transition-colors duration-300" title="GitHub Secundario">
+          <i data-lucide="git-branch" class="w-5 h-5 text-txtmuted hover:text-neon transition-colors"></i>
+        </a>
+        <button id="mobileMenuBtn" class="md:hidden p-2 rounded-lg hover:bg-dark-500 transition-colors">
+          <i data-lucide="menu" class="w-5 h-5 text-txtmuted"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden border-t border-dark-400">
+      <div class="px-6 py-4 flex flex-col gap-3">
+        <a href="#skills" class="text-sm font-medium text-txtmuted hover:text-neon py-2 mobile-link">Skills</a>
+        <a href="#projects" class="text-sm font-medium text-txtmuted hover:text-neon py-2 mobile-link">Proyectos</a>
+        <a href="#contact" class="text-sm font-medium text-txtmuted hover:text-neon py-2 mobile-link">Contacto</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section id="hero" class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <div class="absolute top-1/4 -right-20 w-64 h-64 bg-neon/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 -left-20 w-48 h-48 bg-cyan/5 rounded-full blur-3xl"></div>
+
+    <div class="max-w-6xl mx-auto px-6 w-full relative z-10">
+      <div class="grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-8">
+          <div class="fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-dark-400 bg-dark-700/50 mb-6">
+              <span class="w-2 h-2 rounded-full bg-neon animate-pulse"></span>
+              <span class="text-xs font-mono text-neon">Disponible para trabajar</span>
+            </div>
+          </div>
+
+          <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.05] tracking-tighter fade-up fade-up-delay-1">
+            <span class="text-txt">Hola, soy </span>
+            <span class="bg-gradient-to-r from-neon to-cyan bg-clip-text text-transparent">Jesus</span>
+            <br>
+            <span class="text-txt">Desarrollador</span>
+            <br>
+            <span id="typed-text" class="text-neon font-mono"></span>
+            <span class="cursor-blink text-neon font-mono">|</span>
+          </h1>
+
+          <p class="text-lg text-txtmuted leading-relaxed max-w-xl fade-up fade-up-delay-2">
+            Full Stack Developer Junior. Construyo aplicaciones web y móviles modernas con React, Flask, Firebase y bases de datos SQL. Apasionado por la arquitectura cliente-servidor y la integración de IA.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-4 fade-up fade-up-delay-3">
+            <a href="#projects" class="inline-flex items-center gap-2 px-6 py-3.5 bg-neon text-dark-900 font-semibold rounded-xl hover:shadow-[0_0_25px_rgba(0,255,0,0.3)] transition-all duration-300">
+              <i data-lucide="folder-git-2" class="w-4 h-4"></i>
+              Ver Proyectos
+            </a>
+            <a href="#contact" class="inline-flex items-center gap-2 px-6 py-3.5 border border-dark-400 text-txt rounded-xl hover:border-neon hover:text-neon transition-all duration-300">
+              <i data-lucide="mail" class="w-4 h-4"></i>
+              Contactar
+            </a>
+          </div>
+
+          <div class="flex items-center gap-6 pt-2 fade-up fade-up-delay-4">
+            <a href="https://github.com/shift-jesus" target="_blank" rel="noopener" class="text-txtmuted hover:text-neon transition-colors" title="GitHub Principal">
+              <i data-lucide="github" class="w-5 h-5"></i>
+            </a>
+            <a href="https://github.com/tab-Jesus" target="_blank" rel="noopener" class="text-txtmuted hover:text-cyan transition-colors" title="GitHub Secundario">
+              <i data-lucide="git-branch" class="w-5 h-5"></i>
+            </a>
+            <a href="mailto:Jesusdyunes475@gmail.com" class="text-txtmuted hover:text-neon transition-colors" title="Correo">
+              <i data-lucide="mail" class="w-5 h-5"></i>
+            </a>
+            <div class="h-5 w-px bg-dark-400"></div>
+            <span class="text-xs font-mono text-txtmuted">v1.0 — <span id="currentYear"></span></span>
+          </div>
+        </div>
+
+        <!-- Terminal Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-dark-800 border border-dark-400 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="flex items-center gap-2 px-4 py-3 bg-dark-700 border-b border-dark-400">
+              <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+              <span class="ml-2 text-xs font-mono text-txtmuted">~/jesusdcampo</span>
+            </div>
+            <div class="p-5 font-mono text-sm leading-7 space-y-1">
+              <p><span class="text-neon">$</span> <span class="text-txt">cat developer.json</span></p>
+              <p class="text-txtmuted">{</p>
+              <p class="pl-4"><span class="text-cyan">"name"</span>: <span class="text-neon">"Jesus David Campo Yunes"</span>,</p>
+              <p class="pl-4"><span class="text-cyan">"role"</span>: <span class="text-neon">"Junior Full Stack Developer"</span>,</p>
+              <p class="pl-4"><span class="text-cyan">"location"</span>: <span class="text-neon">"Cartagena, Colombia"</span>,</p>
+              <p class="pl-4"><span class="text-cyan">"languages"</span>: [<span class="text-neon">"Go"</span>, <span class="text-neon">"Python"</span>, <span class="text-neon">"TypeScript"</span>, <span class="text-neon">"Java"</span>, <span class="text-neon">"C++"</span>],</p>
+              <p class="pl-4"><span class="text-cyan">"stack"</span>: [<span class="text-neon">"React"</span>, <span class="text-neon">"Flask"</span>, <span class="text-neon">"PostgreSQL"</span>, <span class="text-neon">"Firebase"</span>],</p>
+              <p class="pl-4"><span class="text-cyan">"email"</span>: <span class="text-neon">"Jesusdyunes475@gmail.com"</span>,</p>
+              <p class="pl-4"><span class="text-cyan">"status"</span>: <span class="text-green-400">"open_to_work"</span></p>
+              <p class="text-txtmuted">}</p>
+              <p class="mt-2"><span class="text-neon">$</span> <span class="cursor-blink">▊</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SKILLS SECTION ===== -->
+  <section id="skills" class="relative py-24">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="mb-16">
+        <span class="text-xs font-mono text-neon uppercase tracking-widest">// Tech Stack</span>
+        <h2 class="text-3xl md:text-4xl font-bold tracking-tight mt-3">Habilidades <span class="text-cyan">Técnicas</span></h2>
+        <p class="text-txtmuted mt-2">Tecnologías y herramientas que domino actualmente.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Lenguajes -->
+        <div class="skill-card">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="code-2" class="w-5 h-5 text-neon"></i>
+            <h3 class="font-bold text-txt">Lenguajes</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Go</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Java</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Kotlin</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Python</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">TypeScript</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">JavaScript</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Dart</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">PHP</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">C</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">C++</span>
+          </div>
+        </div>
+
+        <!-- Frontend -->
+        <div class="skill-card">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="monitor" class="w-5 h-5 text-neon"></i>
+            <h3 class="font-bold text-txt">Frontend</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">React</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Vite</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">React Router</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">HTML5</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">CSS3</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Tailwind CSS</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Axios</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Chart.js</span>
+          </div>
+        </div>
+
+        <!-- Backend -->
+        <div class="skill-card">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="server" class="w-5 h-5 text-neon"></i>
+            <h3 class="font-bold text-txt">Backend</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Node.js</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Express.js</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Flask</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Spring Boot</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">API REST</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">JWT</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">CORS</span>
+          </div>
+        </div>
+
+        <!-- Bases de Datos -->
+        <div class="skill-card">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="database" class="w-5 h-5 text-neon"></i>
+            <h3 class="font-bold text-txt">Bases de Datos</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">PostgreSQL</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">MySQL</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Oracle</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">SQLite</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">SQLAlchemy</span>
+          </div>
+        </div>
+
+        <!-- Móvil -->
+        <div class="skill-card">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="smartphone" class="w-5 h-5 text-neon"></i>
+            <h3 class="font-bold text-txt">Desarrollo Móvil</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Android (Kotlin)</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Dart (Flutter)</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Firebase Auth</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Kodular</span>
+          </div>
+        </div>
+
+        <!-- Herramientas y Arquitectura -->
+        <div class="skill-card">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="git-branch" class="w-5 h-5 text-neon"></i>
+            <h3 class="font-bold text-txt">Arquitectura y Herramientas</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">POO</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Cliente-Servidor</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Multer</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Markdown</span>
+            <span class="px-3 py-1 bg-dark-500 text-neon text-xs font-mono rounded-full border border-dark-400">Grok SDK (IA)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS SECTION ===== -->
+  <section id="projects" class="relative py-24 bg-dark-800/30">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="mb-16">
+        <span class="text-xs font-mono text-neon uppercase tracking-widest">// Portafolio</span>
+        <h2 class="text-3xl md:text-4xl font-bold tracking-tight mt-3">Proyectos <span class="text-cyan">Destacados</span></h2>
+        <p class="text-txtmuted mt-2">Una muestra de lo que puedo construir.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- SeaVector -->
+        <div class="project-card p-6 flex flex-col">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-neon/20 flex items-center justify-center">
+              <i data-lucide="waves" class="w-5 h-5 text-neon"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-txt">SeaVector</h3>
+              <p class="text-xs text-txtmuted font-mono">Java · Spring Boot · React · SQLite</p>
+            </div>
+          </div>
+          <p class="text-sm text-txtmuted leading-relaxed flex-1 line-clamp-3">Plataforma premium de simulación 3D que modela la erosión costera en Cartagena de Indias al año 2050.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Java</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Spring Boot</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">3D</span>
+          </div>
+          <button onclick="openModal('seavector')" class="mt-4 inline-flex items-center gap-1 text-xs font-mono text-cyan hover:text-neon transition-colors">Ver detalles <i data-lucide="arrow-up-right" class="w-3 h-3"></i></button>
+          <a href="https://github.com/shift-jesus/SeaVector" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-xs font-mono text-txtmuted hover:text-neon transition-colors">GitHub <i data-lucide="external-link" class="w-3 h-3"></i></a>
+        </div>
+
+        <!-- EcoDeMujeres -->
+        <div class="project-card p-6 flex flex-col">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-neon/20 flex items-center justify-center">
+              <i data-lucide="users" class="w-5 h-5 text-neon"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-txt">Eco de Mujeres</h3>
+              <p class="text-xs text-txtmuted font-mono">React · Node.js · PostgreSQL</p>
+            </div>
+          </div>
+          <p class="text-sm text-txtmuted leading-relaxed flex-1 line-clamp-3">Plataforma digital que documenta y difunde las historias de mujeres líderes comunitarias en Cartagena de Indias.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Node.js</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Audio</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Social</span>
+          </div>
+          <button onclick="openModal('ecodemujeres')" class="mt-4 inline-flex items-center gap-1 text-xs font-mono text-cyan hover:text-neon transition-colors">Ver detalles <i data-lucide="arrow-up-right" class="w-3 h-3"></i></button>
+          <a href="https://github.com/shift-jesus/EcoDeMujeres" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-xs font-mono text-txtmuted hover:text-neon transition-colors">GitHub <i data-lucide="external-link" class="w-3 h-3"></i></a>
+        </div>
+
+        <!-- JSharPix -->
+        <div class="project-card p-6 flex flex-col">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-neon/20 flex items-center justify-center">
+              <i data-lucide="camera" class="w-5 h-5 text-neon"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-txt">JSharPix</h3>
+              <p class="text-xs text-txtmuted font-mono">React · Flask · SQLite</p>
+            </div>
+          </div>
+          <p class="text-sm text-txtmuted leading-relaxed flex-1 line-clamp-3">Aplicación web fullstack para fotógrafos con galería personal privada y sistema de conexiones para compartir fotos.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Flask</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">SQLite</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Fullstack</span>
+          </div>
+          <button onclick="openModal('jsharpix')" class="mt-4 inline-flex items-center gap-1 text-xs font-mono text-cyan hover:text-neon transition-colors">Ver detalles <i data-lucide="arrow-up-right" class="w-3 h-3"></i></button>
+          <a href="https://github.com/shift-jesus/JSharPix" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-xs font-mono text-txtmuted hover:text-neon transition-colors">GitHub <i data-lucide="external-link" class="w-3 h-3"></i></a>
+        </div>
+
+        <!-- JVision-IA -->
+        <div class="project-card p-6 flex flex-col">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-neon/20 flex items-center justify-center">
+              <i data-lucide="brain" class="w-5 h-5 text-neon"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-txt">JVision AI</h3>
+              <p class="text-xs text-txtmuted font-mono">React · Python · IA · FastAPI</p>
+            </div>
+          </div>
+          <p class="text-sm text-txtmuted leading-relaxed flex-1 line-clamp-3">Simulador demográfico con proyecciones hasta 2075 y chat con datos reales del gobierno colombiano usando IA.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Python</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">IA</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Open Data</span>
+          </div>
+          <button onclick="openModal('jvision')" class="mt-4 inline-flex items-center gap-1 text-xs font-mono text-cyan hover:text-neon transition-colors">Ver detalles <i data-lucide="arrow-up-right" class="w-3 h-3"></i></button>
+          <a href="https://github.com/shift-jesus/JVision-IA" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-xs font-mono text-txtmuted hover:text-neon transition-colors">GitHub <i data-lucide="external-link" class="w-3 h-3"></i></a>
+        </div>
+
+        <!-- SP.PinkTime -->
+        <div class="project-card p-6 flex flex-col">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-neon/20 flex items-center justify-center">
+              <i data-lucide="shopping-bag" class="w-5 h-5 text-neon"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-txt">SP.PinkTime</h3>
+              <p class="text-xs text-txtmuted font-mono">React · Node.js · PostgreSQL</p>
+            </div>
+          </div>
+          <p class="text-sm text-txtmuted leading-relaxed flex-1 line-clamp-3">Tienda de comercio electrónico de bolsos, carteras y accesorios femeninos con carrito de compras y pagos integrados.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Node.js</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">E-commerce</span>
+            <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">PostgreSQL</span>
+          </div>
+          <button onclick="openModal('spinktime')" class="mt-4 inline-flex items-center gap-1 text-xs font-mono text-cyan hover:text-neon transition-colors">Ver detalles <i data-lucide="arrow-up-right" class="w-3 h-3"></i></button>
+          <a href="https://github.com/shift-jesus/SP.PinkTime" target="_blank" rel="noopener" class="mt-2 inline-flex items-center gap-1 text-xs font-mono text-txtmuted hover:text-neon transition-colors">GitHub <i data-lucide="external-link" class="w-3 h-3"></i></a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECT MODALS ===== -->
+  <!-- SeaVector Modal -->
+  <div id="modal-seavector" class="project-modal">
+    <div class="project-modal-content">
+      <button class="close-btn" onclick="closeModal('seavector')"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3>🌊 SeaVector</h3>
+      <p class="text-xs font-mono text-neon mb-4">Simulación 3D de erosión costera · Cartagena 2050</p>
+      <p>SeaVector es una plataforma premium de simulación 3D que modela la erosión costera en Cartagena de Indias al año 2050. Utiliza una API completa en Java con Spring Boot y SQLite para resolver ecuaciones de cálculo multivariable y derivadas parciales en tiempo real.</p>
+      <p>Su interfaz futurista en React permite visualizar el avance del mar y vectores de gradiente, ofreciendo una herramienta poderosa para la planificación urbana y la conciencia ambiental.</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Java</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Spring Boot</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">SQLite</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Cálculo Multivariable</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">3D</span>
+      </div>
+      <a href="https://github.com/shift-jesus/SeaVector" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-neon text-dark-900 text-sm font-semibold rounded-lg hover:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all">Ver en GitHub <i data-lucide="external-link" class="w-4 h-4"></i></a>
+    </div>
+  </div>
+
+  <!-- EcoDeMujeres Modal -->
+  <div id="modal-ecodemujeres" class="project-modal">
+    <div class="project-modal-content">
+      <button class="close-btn" onclick="closeModal('ecodemujeres')"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3>🌿 Eco de Mujeres</h3>
+      <p class="text-xs font-mono text-neon mb-4">Plataforma de memoria comunitaria · Cartagena</p>
+      <p>Eco de Mujeres es una plataforma digital que documenta y difunde las historias de mujeres líderes comunitarias en Cartagena de Indias. A través de perfiles individuales, testimonios en audio, transcripciones y documentos de consentimiento informado, buscamos preservar la memoria y dar visibilidad a mujeres que transforman sus barrios desde adentro.</p>
+      <p>El proyecto combina tecnología web con impacto social, permitiendo que las voces de estas líderes trasciendan generaciones.</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Node.js</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">PostgreSQL</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Audio</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Impacto Social</span>
+      </div>
+      <a href="https://github.com/shift-jesus/EcoDeMujeres" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-neon text-dark-900 text-sm font-semibold rounded-lg hover:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all">Ver en GitHub <i data-lucide="external-link" class="w-4 h-4"></i></a>
+    </div>
+  </div>
+
+  <!-- JSharPix Modal -->
+  <div id="modal-jsharpix" class="project-modal">
+    <div class="project-modal-content">
+      <button class="close-btn" onclick="closeModal('jsharpix')"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3>📸 JSharPix</h3>
+      <p class="text-xs font-mono text-neon mb-4">Galería privada para fotógrafos · Fullstack</p>
+      <p>JSharPix es una aplicación web fullstack para fotógrafos que quieren una galería personal privada, con sistema de conexiones para compartir fotos seleccionadas con amigos de confianza. Incluye autenticación de usuarios, gestión de álbumes y control de privacidad granular.</p>
+      <p>Diseñada para que los profesionales de la fotografía tengan un espacio propio sin depender de redes sociales tradicionales.</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Flask</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">SQLite</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">JWT</span>
+      </div>
+      <a href="https://github.com/shift-jesus/JSharPix" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-neon text-dark-900 text-sm font-semibold rounded-lg hover:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all">Ver en GitHub <i data-lucide="external-link" class="w-4 h-4"></i></a>
+    </div>
+  </div>
+
+  <!-- JVision-IA Modal -->
+  <div id="modal-jvision" class="project-modal">
+    <div class="project-modal-content">
+      <button class="close-btn" onclick="closeModal('jvision')"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3>🧠 JVision AI</h3>
+      <p class="text-xs font-mono text-neon mb-4">Simulador demográfico + Chat con datos reales · IA</p>
+      <p>JVision AI tiene dos módulos principales:</p>
+      <p><strong>1. Simulador demográfico</strong> — Ajustas parámetros con sliders, el sistema proyecta consecuencias poblacionales hasta 2075 y una IA genera un análisis estructurado con efecto dominó.</p>
+      <p><strong>2. Chat con datos reales de Bolívar</strong> — Seleccionas un dataset oficial de datos.gov.co y haces preguntas abiertas en lenguaje natural. La IA consulta los datos reales en tiempo real y responde con cifras específicas.</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Python</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">FastAPI</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">IA</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Open Data</span>
+      </div>
+      <a href="https://github.com/shift-jesus/JVision-IA" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-neon text-dark-900 text-sm font-semibold rounded-lg hover:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all">Ver en GitHub <i data-lucide="external-link" class="w-4 h-4"></i></a>
+    </div>
+  </div>
+
+  <!-- SP.PinkTime Modal -->
+  <div id="modal-spinktime" class="project-modal">
+    <div class="project-modal-content">
+      <button class="close-btn" onclick="closeModal('spinktime')"><i data-lucide="x" class="w-5 h-5"></i></button>
+      <h3>👜 SP.PinkTime</h3>
+      <p class="text-xs font-mono text-neon mb-4">E-commerce de bolsos y accesorios · Fullstack</p>
+      <p>SP.PinkTime es una tienda de comercio electrónico de bolsos, carteras y accesorios femeninos. Incluye catálogo de productos, carrito de compras, sistema de pedidos, pasarela de pagos integrada y panel de administración para gestionar inventario.</p>
+      <p>Construida con las mejores prácticas de desarrollo web moderno y enfocada en una experiencia de usuario fluida y elegante.</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">React</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Node.js</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">PostgreSQL</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">E-commerce</span>
+        <span class="px-2 py-0.5 rounded bg-dark-500 text-[10px] font-mono text-neon">Stripe</span>
+      </div>
+      <a href="https://github.com/shift-jesus/SP.PinkTime" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-neon text-dark-900 text-sm font-semibold rounded-lg hover:shadow-[0_0_15px_rgba(0,255,0,0.3)] transition-all">Ver en GitHub <i data-lucide="external-link" class="w-4 h-4"></i></a>
+    </div>
+  </div>
+
+  <!-- ===== CONTACT SECTION ===== -->
+  <section id="contact" class="relative py-24">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <span class="text-xs font-mono text-neon uppercase tracking-widest">// Contacto</span>
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tight mt-3">Hablemos</h2>
+          <p class="text-txtmuted mt-4 leading-relaxed">Estoy abierto a nuevas oportunidades laborales, colaboraciones y proyectos freelance. Si crees que encajo en tu equipo, no dudes en escribirme.</p>
+          <div class="space-y-4 mt-8">
+            <a href="mailto:Jesusdyunes475@gmail.com" class="flex items-center gap-3 text-txtmuted hover:text-neon transition-colors group">
+              <div class="w-10 h-10 rounded-lg bg-dark-700 border border-dark-400 flex items-center justify-center group-hover:border-neon transition-colors">
+                <i data-lucide="mail" class="w-4 h-4"></i>
+              </div>
+              <span class="text-sm font-mono">Jesusdyunes475@gmail.com</span>
+            </a>
+            <a href="https://github.com/shift-jesus" target="_blank" rel="noopener" class="flex items-center gap-3 text-txtmuted hover:text-neon transition-colors group">
+              <div class="w-10 h-10 rounded-lg bg-dark-700 border border-dark-400 flex items-center justify-center group-hover:border-neon transition-colors">
+                <i data-lucide="github" class="w-4 h-4"></i>
+              </div>
+              <span class="text-sm font-mono">github.com/shift-jesus</span>
+            </a>
+            <a href="https://github.com/tab-Jesus" target="_blank" rel="noopener" class="flex items-center gap-3 text-txtmuted hover:text-neon transition-colors group">
+              <div class="w-10 h-10 rounded-lg bg-dark-700 border border-dark-400 flex items-center justify-center group-hover:border-neon transition-colors">
+                <i data-lucide="git-branch" class="w-4 h-4"></i>
+              </div>
+              <span class="text-sm font-mono">github.com/tab-Jesus</span>
+            </a>
+          </div>
+        </div>
+        <!-- Contact Form -->
+        <div class="bg-dark-800 border border-dark-400 rounded-2xl p-8">
+          <form id="contactForm" class="space-y-5" action="https://formspree.io/f/xkoangnk" method="POST">
+            <div>
+              <label class="block text-xs font-mono text-txtmuted mb-2">Nombre</label>
+              <input type="text" name="name" required class="w-full bg-dark-700 border border-dark-400 rounded-lg px-4 py-3 text-sm text-txt focus:outline-none focus:border-neon transition-colors">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-txtmuted mb-2">Email</label>
+              <input type="email" name="email" required class="w-full bg-dark-700 border border-dark-400 rounded-lg px-4 py-3 text-sm text-txt focus:outline-none focus:border-neon transition-colors">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-txtmuted mb-2">Mensaje</label>
+              <textarea rows="4" name="message" required class="w-full bg-dark-700 border border-dark-400 rounded-lg px-4 py-3 text-sm text-txt focus:outline-none focus:border-neon transition-colors resize-none"></textarea>
+            </div>
+            <button type="submit" class="w-full py-3 bg-neon text-dark-900 font-semibold rounded-xl hover:shadow-[0_0_20px_rgba(0,255,0,0.3)] transition-all duration-300 flex items-center justify-center gap-2">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              Enviar mensaje
+            </button>
+          </form>
+          <p id="formMessage" class="text-xs text-center mt-3 text-txtmuted hidden">✅ Mensaje enviado. ¡Gracias!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="border-t border-dark-400 py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-txtmuted font-mono">© <span id="footerYear"></span> Jesus David Campo Yunes — JDCY.dev</p>
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/shift-jesus" target="_blank" rel="noopener" class="text-txtmuted hover:text-neon transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a>
+        <a href="https://github.com/tab-Jesus" target="_blank" rel="noopener" class="text-txtmuted hover:text-cyan transition-colors"><i data-lucide="git-branch" class="w-4 h-4"></i></a>
+        <a href="mailto:Jesusdyunes475@gmail.com" class="text-txtmuted hover:text-neon transition-colors"><i data-lucide="mail" class="w-4 h-4"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Update year
+    const year = new Date().getFullYear();
+    document.getElementById('currentYear') && (document.getElementById('currentYear').textContent = year);
+    document.getElementById('footerYear') && (document.getElementById('footerYear').textContent = year);
+
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+    // Typing effect
+    const typedElement = document.getElementById('typed-text');
+    const roles = ['Full Stack', 'con React', 'con Python', 'con Go', 'en la nube'];
+    let roleIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let typeSpeed = 100;
+
+    function typeLoop() {
+      const currentRole = roles[roleIndex];
+      if (isDeleting) {
+        typedElement.textContent = currentRole.substring(0, charIndex - 1);
+        charIndex--;
+        typeSpeed = 50;
+      } else {
+        typedElement.textContent = currentRole.substring(0, charIndex + 1);
+        charIndex++;
+        typeSpeed = 100;
+      }
+
+      if (!isDeleting && charIndex === currentRole.length) {
+        typeSpeed = 2000;
+        isDeleting = true;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        typeSpeed = 300;
+      }
+
+      setTimeout(typeLoop, typeSpeed);
+    }
+
+    if (typedElement) typeLoop();
+
+    // Project modals
+    function openModal(id) {
+      const modal = document.getElementById('modal-' + id);
+      if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        lucide.createIcons();
+      }
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById('modal-' + id);
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    // Close modals on backdrop click
+    document.querySelectorAll('.project-modal').forEach(modal => {
+      modal.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+
+    // Close modals on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.project-modal.active').forEach(modal => {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      }
+    });
+
+    // Simple contact form demo
+    // La lógica de envío del formulario ahora es manejada por Formspree directamente
+    // Asegúrate de reemplazar 'YOUR_FORMSPREE_ENDPOINT' en el atributo 'action' del formulario.
+    // Formspree redirigirá o mostrará un mensaje de éxito después del envío.
+    // Puedes personalizar la página de éxito en Formspree.
+
+    // Scroll fade animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = 1;
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.skill-card, .project-card').forEach(el => {
+      el.style.opacity = 0;
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
